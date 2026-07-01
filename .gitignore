@@ -1,0 +1,27 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+
+# Backend
+backend/.venv/
+backend/data/
+backend/uploads/
+backend/outputs/
+backend/*.log
+
+# Python
+__pycache__/
+*.py[cod]
+
+# uv cache
+.uv-cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.codex/

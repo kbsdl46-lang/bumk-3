@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.session import init_db
-from app.routers import complaints, excel, health, news, schedules
+from app.routers import complaints, excel, health, news, schedules, team_members
 
 
 def create_app() -> FastAPI:
@@ -17,6 +17,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health.router, prefix="/api")
+    app.include_router(team_members.router, prefix="/api")
     app.include_router(schedules.router, prefix="/api")
     app.include_router(excel.router, prefix="/api")
     app.include_router(complaints.router, prefix="/api")

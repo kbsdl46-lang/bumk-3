@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.session import init_db
+from app.jobs.news_scheduler import start_news_scheduler, stop_news_scheduler
 from app.routers import complaints, excel, health, news, schedules, team_members
 
 
@@ -26,6 +27,11 @@ def create_app() -> FastAPI:
     @app.on_event("startup")
     def on_startup() -> None:
         init_db()
+        start_news_scheduler()
+
+    @app.on_event("shutdown")
+    def on_shutdown() -> None:
+        stop_news_scheduler()
 
     return app
 

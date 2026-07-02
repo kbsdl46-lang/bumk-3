@@ -81,14 +81,40 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS news_articles (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               title TEXT NOT NULL,
+              subtitle TEXT,
               publisher TEXT,
               published_at TEXT,
               url TEXT NOT NULL UNIQUE,
               summary TEXT,
+              content TEXT,
               keyword TEXT,
+              source TEXT,
+              collected_for_date TEXT,
+              collected_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
               created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS news_collection_runs (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              target_date TEXT NOT NULL,
+              status TEXT NOT NULL,
+              started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              finished_at TEXT,
+              inserted_count INTEGER NOT NULL DEFAULT 0,
+              skipped_count INTEGER NOT NULL DEFAULT 0,
+              error_message TEXT
+            );
             """
+        )
+        _ensure_column(connection, "news_articles", "subtitle", "TEXT")
+        _ensure_column(connection, "news_articles", "content", "TEXT")
+        _ensure_column(connection, "news_articles", "source", "TEXT")
+        _ensure_column(connection, "news_articles", "collected_for_date", "TEXT")
+        _ensure_column(
+            connection,
+            "news_articles",
+            "collected_at",
+            "TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP",
         )
         connection.execute(
             """
@@ -100,6 +126,22 @@ def init_db() -> None:
             """
         )
         connection.commit()
+
+
+def _ensure_column(
+    connection: sqlite3.Connection,
+    table_name: str,
+    column_name: str,
+    column_definition: str,
+) -> None:
+    columns = {
+        row["name"]
+        for row in connection.execute(f"PRAGMA table_info({table_name})").fetchall()
+    }
+    if column_name not in columns:
+        connection.execute(
+            f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_definition}"
+        )
 
 
 def check_db() -> dict[str, str]:
